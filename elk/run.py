@@ -1,62 +1,60 @@
 # -*- coding: utf-8 -*-
 
-import os
 import uuid
 
 from elasticsearch import Elasticsearch, helpers
 
-from util.html_parse import parse_html_file
+from util.html_parser import HTMLParser
+from util.data_loader import load_origin_html_list
 
-html_file_folder = "../material/lenin-cworks"
 es = Elasticsearch()
 
-
-def init():
-    """ Build ElasticSearch index """
-    return es.indices.create(index='marxism', ignore=400)
-
-
-def reset():
-    es.indices.delete(index='marxism', ignore=[400, 404])
-    return es.indices.create(index='marxism', ignore=400)
+SUPPORT_AUTHOR_LIST = ["lenin-cworks", "maozedong"]
+AUTHOR_NAME_DICT = {
+    "lenin-cworks": "列宁",
+    "maozedong": "毛泽东",
+}
 
 
-def ik_setting():
+def create_index(_index_name='marxism'):
+    """ 新建ElasticSearch的index """
+    if es.indices.exists(_index_name):
+        assert ValueError(f"索引{_index_name}已存在")
+    return es.indices.create(index=_index_name, ignore=400)
+
+
+def reset_index(_index_name='marxism'):
+    """ 重置ElasticSearch的index """
+
+    if es.indices.exists(_index_name):
+        es.indices.delete(index=_index_name, ignore=[400, 404])
+        print("[1] 删除原有索引")
+
+    es.indices.create(index=_index_name, ignore=400)
+    print("[2] 创建新索引")
+
+    create_ik_mapping()
+    print("[3] 配置分词引擎")
+
+
+def create_ik_mapping():
+    """ 设置ik分词的mapping """
 
     mapping = {
         'properties': {
-            'full_title': {
-                'type': 'text',
-                'analyzer': 'ik_max_word',
-                'search_analyzer': 'ik_max_word'
-            },
-            'article_title': {
-                'type': 'text',
-                'analyzer': 'ik_max_word',
-                'search_analyzer': 'ik_max_word'
-            },
-            'content': {
-                'type': 'text',
-                'analyzer': 'ik_max_word',
-                'search_analyzer': 'ik_max_word'
-            },
-            'author': {
-                'type': 'text',
-                'analyzer': 'ik_max_word',
-                'search_analyzer': 'ik_max_word'
-            },
-
+            'title': {'type': 'text', 'analyzer': 'ik_max_word', 'search_analyzer': 'ik_smart'},
+            'author': {'type': 'text', 'analyzer': 'ik_max_word', 'search_analyzer': 'ik_smart'},
+            'content': {'type': 'text', 'analyzer': 'ik_max_word', 'search_analyzer': 'ik_smart'},
         }
     }
-    return es.indices.put_mapping(index='marxism', doc_type='politics',
-                                  body=mapping,
+
+    return es.indices.put_mapping(index='marxism', doc_type='politics', body=mapping,
                                   include_type_name=True)
 
 
 def bulk_json_data(json_list, _index, doc_type):
-    """ generator to push bulk data from a JSON
-        file into an ElasticSearch index
-    """
+    """ generator to push bulk data from a JSON file into an ElasticSearch index """
+
     for doc in json_list:
         # use a `yield` generator so that the data isn't loaded into memory
         if '{"index"' not in doc:
@@ -68,45 +66,42 @@ def bulk_json_data(json_list, _index, doc_type):
             }
 
 
-def insert():
-    vol_list = os.listdir(html_file_folder)
+def batch_insert(author):
+    """ 批量输入es文档 """
 
-    # Every volume
-    for vol_name in vol_list:
-        vol_folder = os.path.join(html_file_folder, vol_name)
+    if isinstance(author, str):
+        author_list = [author]
+    elif isinstance(author, list):
+        author_list = author
+    else:
+        return
 
-        article_list = [article for article in os.listdir(vol_folder) if article.endswith("html")]
+    for author in author_list:
 
-        # For every html article
-        for article_name in article_list:
-            article_path = os.path.join(vol_folder, article_name)
+        html_parser = HTMLParser(author=author)  # 为每个作者新建一个parser
+        _article_path_list = load_origin_html_list(author)  # 获得作者的所有文章地址
 
-            # Parse article
-            title, sub_title, data_text, para_list = parse_html_file(article_path)
+        for _article_path in _article_path_list:  # 逐个解析作者文章
 
-            para_json_template = {
-                'full_title': title,
-                'article_title': sub_title,
-                'date_text': data_text,
-                'date': None,
-                'author': '列宁',
-                'source': "列宁全集第" + vol_name + "卷",
-                'content': None
-            }
+            article_info, para_list = html_parser.parse_html_file(_article_path)
+            if article_info is None or para_list is None:
+                continue
 
+            # 把每个自然段包装成一个JSON
             para_json_list = []
-            # For every paragraph
             for i, para in enumerate(para_list):
-                para_json_list.append(para_json_template.copy())
+                para_json_list.append(article_info.copy())
                 para_json_list[i]['content'] = para
 
+            # 批量插入
             try:
-                # make the bulk call, and get a response
                 response = helpers.bulk(es, bulk_json_data(para_json_list, "marxism", "politics"))
-                print("\nbulk_json_data() RESPONSE:", response)
+                print(f"插入《{article_info['title']}》, 得到反馈结果 {response}.")
             except Exception as e:
                 print("\nERROR:", e)
 
 
 if __name__ == '__main__':
-    insert()
+    batch_insert(["maozedong", "lenin-cworks"])
+    # reset_index()
+    pass
