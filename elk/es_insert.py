@@ -38,7 +38,14 @@ def reset_index(_index_name='marxism'):
 
 
 def create_ik_mapping():
-    """ 设置ik分词的mapping """
+    """ 设置ik分词的mapping
+        https://github.com/medcl/elasticsearch-analysis-ik
+
+        ik_max_word: 会将文本做最细粒度的拆分
+            比如会将“中华人民共和国国歌”拆分为“中华人民共和国,中华人民,中华,华人,人民共和国,人民,人,民,共和国,共和,和,国国,国歌”，会穷尽各种可能的组合，适合 Term Query；
+        ik_smart: 会做最粗粒度的拆分
+            比如会将“中华人民共和国国歌”拆分为“中华人民共和国,国歌”，适合 Phrase 查询。
+    """
 
     mapping = {
         'properties': {

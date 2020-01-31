@@ -35,9 +35,9 @@ class HTMLParser:
     def _parse_lenin_cworks(self):
         """ 针对列宁全集设计的专用parse """
 
-        """ <title>列宁全集第八卷――凡例</title> """
         # 把卷名与文章名字隔开
         try:
+            """ <title>列宁全集第八卷――凡例</title> """
             vol_name, *article_name = self.article_info["title"].split("——")
             # 对于有多个破折号的标题，需要把后面的部分进行连接
             if isinstance(article_name, list):
@@ -66,18 +66,55 @@ class HTMLParser:
         return self.article_info
 
     @staticmethod
-    def _parse_content(_content_str_list):
+    def _parse_content(content_list):
         """ 解析文章内容 """
 
-        # 删除不带有中文字符的语段
-        _content_str_list = [s for s in _content_str_list if check_contain_chinese(s)]
+        result_str_list = []
 
-        # 删除一些特定字符
-        target_list = ["\n", "\r", "\t", "\u3000", "\u2000"]
-        for target in target_list:
-            _content_str_list = [s.replace(target, "") for s in _content_str_list]
+        i = 0
+        length = len(content_list)
+        pre_content_list = []  # 保持没有正常标点结尾的句子
 
-        return _content_str_list
+        while i < length:
+
+            content = content_list[i]
+            i += 1
+
+            # 判断某句话可以删除
+            if content in ["马克思主义中文文库"]:
+                continue
+
+            # 删除不带有中文字符的语段
+            if not check_contain_chinese(content):
+                continue
+
+            # 判断句子是否以标点结束
+            if content.endswith("。") or \
+                    content.endswith("！") or \
+                    content.endswith("？") or \
+                    content.endswith("……"):
+                # 如句子以正常的标点结束
+
+                # 如果pre_content_list不为空，那么就把本句话作为前面所有语句的结尾。
+                if pre_content_list:
+                    content = "".join(pre_content_list) + content
+                # 清空pre_content_list
+                pre_content_list = []
+
+            else:
+                # 如句子没有以正常的标点结束，那么就把该句放入pre_content_list
+                pre_content_list.append(content)
+                continue
+
+            # 删除一些特定字符
+            target_list = ["\n", "\r", "\t", "\u3000", "\u2000"]
+            for target in target_list:
+                content = content.replace(target, "")
+
+            """ 把经过处理的文本保存下来 """
+            result_str_list.append(content)
+
+        return result_str_list
 
     def parse_html_file(self, _html_file_path) -> (dict, list):
         """ 解析HTML文档
