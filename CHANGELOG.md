@@ -8,13 +8,18 @@ Added Changed Deprecated Removed Fixed Security
 
 ## [Unreleased]
 
-## [0.0.4] - 2020-01-31
+## [0.0.5] - 2020-02-01
+### Added
+- 添加了把语段存储到MySQL的功能
 
+### Changed
+- 把HTML抽取JSON的函数改写成生成器 为ES和MySQL提供统一的接口
+
+## [0.0.4] - 2020-01-31
 ### Changed
 - 修改了`es_query.py` 增加了多字段多词查询功能
 
 ## [0.0.3] - 2020-01-31
-
 ### Added
 - 增加了检索部分，在`es_query.py`文件中
 
