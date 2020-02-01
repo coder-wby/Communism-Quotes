@@ -4,6 +4,7 @@ import re
 
 from lxml import etree
 from util.text_parser import check_contain_chinese
+from util.data_loader import load_origin_html_list
 
 """ HTML解析器
     原始数据是从马克思主义中文文库上抓取的HTML网页。
@@ -138,9 +139,13 @@ class HTMLParser:
 
         # 判断是否有标题信息
         if _title_str is None:
-            return None
+            return None, None
         else:
             _title_str = _title_str.replace(" ", "")  # 删除空格
+
+        # 检查日期字段
+        if _date_str and len(_date_str) > 64:
+            _date_str = None
 
         # 文档信息的字段
         self.article_info = {
@@ -157,6 +162,36 @@ class HTMLParser:
         _content_str_list = self._parse_content(_content_str_list)
 
         return _article_info, _content_str_list
+
+
+def bulk_doc_json(author):
+    """ 用Python生成器的方式构造json list """
+
+    if isinstance(author, str):
+        author_list = [author]
+    elif isinstance(author, list):
+        author_list = author
+    else:
+        raise ValueError("暂时不支持该作者")
+
+    for author in author_list:
+
+        html_parser = HTMLParser(author=author)  # 为每个作者新建一个parser
+        _article_path_list = load_origin_html_list(author)  # 获得作者的所有文章地址
+
+        for _article_path in _article_path_list:  # 逐个解析作者文章
+
+            article_info, para_list = html_parser.parse_html_file(_article_path)
+            if article_info is None or para_list is None:
+                continue
+
+            # 把每个自然段包装成一个JSON
+            para_json_list = []
+            for i, para in enumerate(para_list):
+                para_json_list.append(article_info.copy())
+                para_json_list[i]['content'] = para
+
+            yield para_json_list
 
 
 def parse_vol_str(_vol_str, mode='lenin-cworks'):

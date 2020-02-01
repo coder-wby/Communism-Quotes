@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import uuid
-
 from elasticsearch import Elasticsearch, helpers
 
-from util.html_parser import HTMLParser
-from util.data_loader import load_origin_html_list
+from util.html_parser import bulk_doc_json
 
 es = Elasticsearch()
 
@@ -37,7 +34,7 @@ def reset_index(_index_name='marxism'):
     print("[3] 配置分词引擎")
 
 
-def create_ik_mapping():
+def create_ik_mapping(_index_name="marxism", _doc_type="article"):
     """ 设置ik分词的mapping
         https://github.com/medcl/elasticsearch-analysis-ik
 
@@ -55,57 +52,20 @@ def create_ik_mapping():
         }
     }
 
-    return es.indices.put_mapping(index='marxism', doc_type='politics', body=mapping,
+    return es.indices.put_mapping(index=_index_name, doc_type=_doc_type, body=mapping,
                                   include_type_name=True)
-
-
-def bulk_json_data(json_list, _index, doc_type):
-    """ generator to push bulk data from a JSON file into an ElasticSearch index """
-
-    for doc in json_list:
-        # use a `yield` generator so that the data isn't loaded into memory
-        if '{"index"' not in doc:
-            yield {
-                "_index": _index,
-                "_type": doc_type,
-                "_id": uuid.uuid4(),
-                "_source": doc
-            }
 
 
 def batch_insert(author):
     """ 批量输入es文档 """
 
-    if isinstance(author, str):
-        author_list = [author]
-    elif isinstance(author, list):
-        author_list = author
-    else:
-        return
-
-    for author in author_list:
-
-        html_parser = HTMLParser(author=author)  # 为每个作者新建一个parser
-        _article_path_list = load_origin_html_list(author)  # 获得作者的所有文章地址
-
-        for _article_path in _article_path_list:  # 逐个解析作者文章
-
-            article_info, para_list = html_parser.parse_html_file(_article_path)
-            if article_info is None or para_list is None:
-                continue
-
-            # 把每个自然段包装成一个JSON
-            para_json_list = []
-            for i, para in enumerate(para_list):
-                para_json_list.append(article_info.copy())
-                para_json_list[i]['content'] = para
-
-            # 批量插入
-            try:
-                response = helpers.bulk(es, bulk_json_data(para_json_list, "marxism", "politics"))
-                print(f"插入《{article_info['title']}》, 得到反馈结果 {response}.")
-            except Exception as e:
-                print("\nERROR:", e)
+    for para_json_list in bulk_doc_json(author):
+        # 批量插入
+        try:
+            response = helpers.bulk(client=es, actions=para_json_list, index="marxism", doc_type="article")
+            print(f"得到反馈结果 {response}.")
+        except Exception as e:
+            print("\nERROR:", e)
 
 
 if __name__ == '__main__':
