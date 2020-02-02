@@ -33,7 +33,7 @@
 
 ### 依赖环境
 
-- `Python 3.7` （建议直接使用 `Anaconda` ）
+- `Python 3.7`（建议直接使用 `Anaconda` ）
 - `ElasticSearch 7.5.0` （核心依赖组件）
 - `MySQL 8.0` （目前不是强制需要）
 
@@ -47,9 +47,14 @@
 
 2. 安装相关 `Python` 依赖包
 
-    ```
-    pip install -r requirements.txt
-    ```
+   使用pip 
+   ```
+   pip install -r requirements.txt
+   ```
+   或者使用pipenv
+   ```
+   pipenv install --skip-lock
+   ``` 
     
 3. 下载 [`ElasticSearch`](https://www.elastic.co/cn/downloads/elasticsearch)
 
