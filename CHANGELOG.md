@@ -8,6 +8,15 @@ Added Changed Deprecated Removed Fixed Security
 
 ## [Unreleased]
 
+## [0.1.0] - 2020-02-02
+
+第一个Release版本
+
+### Added
+- 增加了setup和main文件
+- 增加了requirements文件
+- 重命名`query`文件夹
+
 ## [0.0.5] - 2020-02-01
 ### Added
 - 添加了把语段存储到MySQL的功能
