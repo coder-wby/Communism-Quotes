@@ -33,27 +33,73 @@
 
 ### 依赖环境
 
-- `Python 3.7`
-- `ElasticSearch 7.5.0`
-- `MySQL 8.0`
+- `Python 3.7` （建议直接使用 `Anaconda` ）
+- `ElasticSearch 7.5.0` （核心依赖组件）
+- `MySQL 8.0` （目前不是强制需要）
 
 ### 安装方式
 
-1. 下载项目源码到本地，并进入根目录。
+1. 下载项目源码到本地，并进入根目录
     ```
     git clone https://github.com/nevertiree/Communism-Quotes.git 
     cd Communism-Quotes/
     ```
 
-2. 运行`setup.py`文件
+2. 安装相关 `Python` 依赖包
+
+    ```
+    pip install -r requirements.txt
+    ```
+    
+3. 下载 [`ElasticSearch`](https://www.elastic.co/cn/downloads/elasticsearch)
+
+    在官方网站上下载 `ElasticSearch` 并解压。
+    
+4. 下载中文分词插件 [`IK Analysis for Elasticsearch`](https://github.com/medcl/elasticsearch-analysis-ik)
+
+    进入 `ElasticSearch` 的根目录，通过 `bin/elasticsearch-plugin`命令来安装中文分词插件。
+    需要注意分词插件的版本号需要与 `ElasticSearch` 的版本号对应，本项目目前在 `7.5.0` 版本下测试。
+    
+    ```
+    ./bin/elasticsearch-plugin install https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v7.5.0/elasticsearch-analysis-ik-7.5.0.zip
+    ```
+   
+    如果无法通过 `bin/elasticsearch-plugin` 完成安装，那么可以直接下载分词插件的压缩包。
+    把分词插件解压到 `ElasticSearch` 根目录下的 `plugins` 文件中，把文件夹命名为 `analysis-ik`。
+    
+    ```
+    /path_to_elasticsearch-7.5.0/plugins/analysis-ik>
+        -a----         commons-codec-1.9.jar
+        -a----         commons-logging-1.2.jar
+        -a----         elasticsearch-analysis-ik-7.5.0.jar
+        -a----         httpclient-4.5.2.jar
+        -a----         httpcore-4.4.4.jar
+        -a----         plugin-descriptor.properties
+        -a----         plugin-security.policy
+    ```
+
+5. 下载文库资料
+   
+## 使用
+
+### 初次使用
+
+1. 运行 `ElasticSearch` 
+
+   Linux系统中运行`bin/elasticsearch`，Windows系统中运行` bin\elasticsearch.bat `。
+   打开 http://localhost:9200/ 检查是否成功运行。
+
+2. 运行 `setup.py` 文件进行初始化
 
     ```
     python setup.py
     ```
-
-3. 配置`ElasticSearch`和`MySQL`信息
-
-## 使用
+   
+3. 运行 `main.py` 文件进行全文检索
+    
+   ```
+   python main.py
+   ```
 
 ## 维护者
 
