@@ -62,13 +62,7 @@ def batch_insert(author):
     for para_json_list in bulk_doc_json(author):
         # 批量插入
         try:
-            response = helpers.bulk(client=es, actions=para_json_list, index="marxism", doc_type="article")
-            print(f"得到反馈结果 {response}.")
+            helpers.bulk(client=es, actions=para_json_list, index="marxism", doc_type="article")
+            print(f"正在插入{para_json_list[0]['title']}.")
         except Exception as e:
             print("\nERROR:", e)
-
-
-if __name__ == '__main__':
-    batch_insert(["maozedong", "lenin-cworks"])
-    # reset_index()
-    pass
