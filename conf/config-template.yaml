@@ -1,0 +1,5 @@
+# ElasticSearch Path
+# elasticsearch_path: 'C:\Windows\system32\elasticsearch-7.5.0\bin' # 这行是示例
+elasticsearch_path: ''
+#elasticsearch_path: ''
+logstash_path: ''
