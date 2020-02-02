@@ -4,7 +4,7 @@
         "spectre": {
             "commandName": "Project",
             "launchBrowser": true,
-            "launchUrl": "index.html",
+            "launchUrl": "",
             "applicationUrl": "http://localhost:5000",
             "environmentVariables": {
                 "ASPNETCORE_ENVIRONMENT": "Development"
