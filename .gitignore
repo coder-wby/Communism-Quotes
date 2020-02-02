@@ -1,6 +1,10 @@
 .idea/
-material/
 log/
 .pytest_cache/
 *.pyc
 */__pycache__/
+conf/config.yaml
+
+!material/
+material/*
+!material/README.md

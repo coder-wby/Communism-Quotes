@@ -7,14 +7,18 @@
 
 import os
 
-ROOT = os.path.abspath('../material')
+ROOT = os.path.abspath('./material')
 
 
-def load_origin_html_list(author) -> list:
+def load_origin_html_list(author: str) -> list:
 
     valid_author_list = ["lenin-cworks", "maozedong"]
 
     assert author in valid_author_list
+
+    """ 判断作者文献是否存在 """
+    if not os.path.exists(os.path.join(ROOT, author)):
+        raise FileNotFoundError(f"未找到文件夹{os.path.join(ROOT, author)}")
 
     # 作者文献的根目录
     _root_path = os.path.join(ROOT, author)

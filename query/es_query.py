@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import json
-
 from elasticsearch import Elasticsearch
 
 es = Elasticsearch()
@@ -15,7 +13,7 @@ def marxism_search(sql, index="marxism"):
                      size=20)
 
 
-def content_search(word_str: str, author_name="列宁", size=20):
+def content_search(word_str: str, author_name=None, size=20):
 
     word_str = word_str.strip()
     word_str = word_str.replace("  ", " ")
@@ -46,10 +44,18 @@ def content_search(word_str: str, author_name="列宁", size=20):
         }
     }
 
+    """ 不限定作者 """
+    if author_name is None:
+        del sql["query"]["bool"]["filter"]
+
     return es.search(index="marxism", body=sql, size=size, _source_includes=["content", "title", "author"])
 
 
-if __name__ == '__main__':
-    query_word = input("输入需要查询的词汇（多个词汇用空格隔开）")
-    result = content_search(query_word)
-    print(json.dumps(result, indent=4, ensure_ascii=False))
+def result_parser(es_result: dict) -> list:
+    result_list = es_result["hits"]["hits"]
+    for i in range(len(result_list)):
+        del result_list[i]["_index"]
+        del result_list[i]["_type"]
+        del result_list[i]["_id"]
+        del result_list[i]["_score"]
+    return result_list
