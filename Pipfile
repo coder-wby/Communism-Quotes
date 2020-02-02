@@ -1,0 +1,30 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+verify_ssl = true
+
+[packages]
+dateparser = "*"
+Django = "*"
+elasticsearch = "*"
+kibana = "*"
+logstash = "*"
+lxml = "*"
+matplotlib = "*"
+mysql = "*"
+mysql-connector = "*"
+mysql-connector-python = "*"
+mysqlclient = "*"
+numpy = "*"
+pandas = "*"
+scikit-learn = "*"
+scipy = "*"
+seaborn = "*"
+SQLAlchemy = "*"
+thulac = "*"
+tqdm = "*"
+requests = "*"
+pyyaml = "*"
+
+[requires]
+python_version = "3.7"
