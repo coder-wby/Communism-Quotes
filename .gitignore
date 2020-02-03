@@ -241,6 +241,7 @@ _Pvt_Extensions
 
 # web
 bower_components/
+/src/spectre/wwwroot
 output.html
 
 # dask
