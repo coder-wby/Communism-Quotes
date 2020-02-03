@@ -29,38 +29,60 @@
 因为我们无法记提供这些名词的精确表述，所以我们就无法在某些事情发生的时候查一查历史上是否有先辈曾经做出过相关的论述。
 我们需要一套可以提供文本关联和推荐排序的搜索系统。
 
-## 安装
+## 开发
 
 ### 依赖环境
 
-- `Python 3.7`（建议直接使用 `Anaconda` ）
+- `Visual Studio 2019` `asp.net core` 用于提供后端服务
+- `nodejs` `vue` 用于web前端
 - `ElasticSearch 7.5.0` （核心依赖组件）
 - `MySQL 8.0` （目前不是强制需要）
 
-### 安装方式
+### 开发环境安装和配置
 
 1. 下载项目源码到本地，并进入根目录
-    ```
-    git clone https://github.com/nevertiree/Communism-Quotes.git 
-    cd Communism-Quotes/
-    ```
 
-2. 安装相关 `Python` 依赖包
+   ```
+   git clone https://github.com/nevertiree/Communism-Quotes.git 
+   cd Communism-Quotes/
+   ```
 
-   使用pip 
-   ```
-   pip install -r requirements.txt
-   ```
-   或者使用pipenv
-   ```
-   pipenv install --skip-lock
-   ``` 
+2. 安装 `Visual Studio 2019`
+
+   见微软官网主页
     
-3. 下载 [`ElasticSearch`](https://www.elastic.co/cn/downloads/elasticsearch)
+3. 安装 `asp.net core sdk`，启动后台服务
+
+   windows版本已包含在 `Visual Studio 2019` 中
+   linux版本见官网主页
+   https://docs.microsoft.com/en-us/dotnet/core/install/linux-package-manager-ubuntu-1804
+    
+   ```
+   cd src/spectre
+   dotnet run   
+   ```
+   aspnet core会在http://localhost:5000启动http服务
+   
+4. 安装 `nodejs(npm)`
+
+   https://nodejs.org/en/download/package-manager/
+    
+5. 安装 `vue-cli`，启动前端web服务
+
+   https://cli.vuejs.org/guide/installation.html
+   
+   ```
+   cd /src/spectre/clientapp
+   npm install
+   npm run serve
+   ```
+   nodejs会在http://localhost:8080启动一个web服务，web页面会访问上述aspnet的http服务，和后台交互。测试完毕后，运行`npm run build`，会将vue项目打包放到aspnet的wwwroot目录下，aspnet同时提供前端web页面服务和后端WebAPI服务（TODO：开发和部署阶段，各种相应的IP和端口需要在代码和配置文件中设置好，尽量自动化）
+     
+6. 下载 [`ElasticSearch`](https://www.elastic.co/cn/downloads/elasticsearch)
 
     在官方网站上下载 `ElasticSearch` 并解压。
     
-4. 下载中文分词插件 [`IK Analysis for Elasticsearch`](https://github.com/medcl/elasticsearch-analysis-ik)
+7. 下载中文分词插件 [`IK Analysis for Elasticsearch`](https://github.com/medcl/elasticsearch-analysis-ik)
 
     进入 `ElasticSearch` 的根目录，通过 `bin/elasticsearch-plugin`命令来安装中文分词插件。
     需要注意分词插件的版本号需要与 `ElasticSearch` 的版本号对应，本项目目前在 `7.5.0` 版本下测试。
@@ -83,53 +105,41 @@
         -a----         plugin-security.policy
     ```
 
-5. 下载文库资料
+8. 下载文库资料
 
     Git仓库中没有直接存储文库资料，可以在 `Release` 界面下载。
     后续会实现稳定的下载机制。
     文库资料统一放在 `material` 文件夹中，详情可查看该文件夹中的说明。
+
+## 发布和使用
+
+1. 最小发布
+
+   aspnet后端编译为一个单一的文件（windows下为`spectre.exe`），加上wwwroot下的vue前端，就可以压缩打包发布了，使用时无需安装，直接启动`spectre.exe`，`spectre.exe`会在本机启动一个http服务（比如http://192.168.1.123:5000），通过浏览器访问此服务，进入初始化页面，在页面上根据提示下载elasticsearch和相应的语料库，自动启动es服务，执行语料库的初始化等操作。
    
-## 使用
+2. 免初始化发布
 
-### 初次使用
-
-1. 运行 `ElasticSearch` 
-
-   Linux系统中运行`bin/elasticsearch`，Windows系统中运行` bin\elasticsearch.bat `。
-   打开 http://localhost:9200/ 检查是否成功运行。
-
-2. 运行 `setup.py` 文件进行初始化
-
-    ```
-    python setup.py
-    ```
+   在上述最小发布的文件和目录之外，再加上初始化完毕、已经建好索引的elasticsearch（无需语料库），压缩打包后即可。
    
-3. 运行 `main.py` 文件进行全文检索
-    
-   ```
-   python main.py
-   ```
+3. 使用
+
+   aspnet后端除了提供初始化页面以外，同时提供查询页面，解压后运行`spectre.exe`，就可以在本机以及内网上通过各种web终端访问此搜索服务了（TODO：要给内网上其他机器提供服务的话，后端服务需要自动帮助用户配置相应的防火墙设置）
 
 ### 更多介绍
 
-  1.文献解析
+1. 文献解析
 
-所有的文献都存储在 `material` 文件的各个子文件夹中。
-文件夹`util`中存放用于解析、清洗和导入文本数据的若干个工具类。
+    所有的文献都存储在 `material` 文件的各个子文件夹中。文件夹`util`中存放用于解析、清洗和导入文本数据的若干个工具类。
+    
+2. 文献存储
 
-  2.文献存储
+    本项目的设计思路是“存储-查询”解耦。`storage`目录存放了两个文件存储函数，分别用于ElasticSearch和MySQL。用户可以直接把HTML数据解析导入到ElasticSearch，然后用ElasticSearch进行检索，即存储检索一体化。用户也可以把HTML数据解析导入到MySQL中，然后用迁移工具把文献从MySQL导入到ElasticSearch中。
 
-本项目的设计思路是“存储-查询”解耦。`storage`目录存放了两个文件存储函数，分别用于ElasticSearch和MySQL。
+    这种设计思路的初衷是维护数据的稳定性——相比于ElasticSearch而言，各个MySQL版本之间更加问题。目前这个设计思路还没有彻底实现，用户可以通过一体化的方式来存储与查询。
 
-用户可以直接把HTML数据解析导入到ElasticSearch，然后用ElasticSearch进行检索，即存储检索一体化。
-用户也可以把HTML数据解析导入到MySQL中，然后用迁移工具把文献从MySQL导入到ElasticSearch中。
+3. 文献查询
 
-这种设计思路的初衷是维护数据的稳定性——相比于ElasticSearch而言，各个MySQL版本之间更加问题。
-目前这个设计思路还没有彻底实现，用户可以通过一体化的方式来存储与查询。
-
-  3.文献查询
-
-目录 `query` 中存放了进行全文搜索的函数。
+    目录 `query` 中存放了进行全文搜索的函数。
 
 ## 维护情况
 
