@@ -37,11 +37,18 @@
         private result: string = "";
 
         onBtnClick1(): void {
+            this.keyword1 = process.env.VUE_APP_api_server;
+            this.keyword2 = typeof process.env.VUE_APP_api_server;
             this.x += 1;
         }
 
         onBtnClick2(): void {
-            axios.get(`http://localhost:5000/query/${this.keyword1}%20${this.keyword2}`)
+            axios.post(
+                `${process.env.VUE_APP_api_server}/query`,
+                {
+                    key1: this.keyword1,
+                    key2: this.keyword2
+                })
                 .then(response => (this.result = response.data.toString()))
         }
     }

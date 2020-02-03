@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
-using Microsoft.AspNetCore.Cors;
+﻿using System;
+using System.Collections.Generic;
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 
 namespace spectre.Controllers
@@ -8,11 +9,12 @@ namespace spectre.Controllers
     [Route("[controller]")]
     public class QueryController : ControllerBase
     {
-        [HttpGet("{qry?}")]
-        public IEnumerable<string> Get(string qry)
+        [HttpPost]
+        public IEnumerable<string> Query([FromBody] JsonElement qry)
         {
-            if (qry == null)
-                return new[] {"no query"};
+            // qry是一个json
+            foreach (var prop in qry.EnumerateObject())
+                Console.WriteLine($"{prop.Name} = {prop.Value}");
 
             var ret = new List<string> {$"result for {qry}:"};
             for (int i = 0; i < 10; i++)
