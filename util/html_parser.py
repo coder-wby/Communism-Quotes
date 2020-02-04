@@ -2,6 +2,8 @@
 
 import re
 
+import yaml
+
 from lxml import etree
 from util.text_parser import check_contain_chinese
 from util.data_loader import load_origin_html_list
@@ -13,18 +15,17 @@ from util.data_loader import load_origin_html_list
 
 gbk_parser = etree.HTMLParser(encoding='GBK')  # 原始网页是GBK编码，所以需要手动设置格式。
 
+with open("../conf/author.yaml", "r", encoding="utf-8") as f:
+    author_conf = yaml.load(f, Loader=yaml.FullLoader)
+
+AUTHOR_NAME_DICT = author_conf["author"]  # 目前支持的作者列表
+
 
 class HTMLParser:
 
-    SUPPORT_AUTHOR_LIST = ["lenin-cworks", "maozedong"]  # 目前支持的作者列表
-    AUTHOR_NAME_DICT = {
-        "lenin-cworks": "列宁",
-        "maozedong": "毛泽东",
-    }
-
     def __init__(self, author):
         self.author = author
-        self.author_name = HTMLParser.AUTHOR_NAME_DICT[author]
+        self.author_name = AUTHOR_NAME_DICT[author]
 
         self.author_parser_dict = {
             "lenin-cworks": self._parse_lenin_cworks,
@@ -209,3 +210,7 @@ def parse_vol_str(_vol_str, mode='lenin-cworks'):
 
         return book_name + vol_name
     return
+
+
+if __name__ == '__main__':
+    print(AUTHOR_NAME_DICT)
