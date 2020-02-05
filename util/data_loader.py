@@ -6,9 +6,16 @@
 """
 
 import os
+import yaml
 
-ROOT = os.path.dirname(__file__)
+
+ROOT = os.path.dirname(__file__)  # util/
 MATERIAL_ROOT = os.path.join(ROOT, "..", "material")
+
+with open(os.path.join(ROOT, "../conf/author.yaml"), "r", encoding="utf-8") as f:
+    author_conf = yaml.load(f, Loader=yaml.FullLoader)
+
+VALID_AUTHOR_LIST = list(author_conf["author"].keys())  # 目前支持的作者列表
 
 
 def load_origin_html_list(author: str) -> list:
@@ -17,9 +24,7 @@ def load_origin_html_list(author: str) -> list:
         :return: list, the list of HTML absolute path.
     """
 
-    valid_author_list = ["lenin-cworks", "maozedong"]
-
-    assert author in valid_author_list
+    assert author in VALID_AUTHOR_LIST
 
     """ 判断作者文献是否存在 """
     if not os.path.exists(os.path.join(MATERIAL_ROOT, author)):
