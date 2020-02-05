@@ -117,10 +117,10 @@ class HTMLParser:
 
         return result_str_list
 
-    def parse_html_file(self, _html_file_path) -> (dict, list):
+    def parse_html_file(self, _html_file_path: str) -> (dict, list):
         """ 解析HTML文档
             :param
-                _html_file_path: 需要解析HTML的地址
+                _html_file_path: str, 需要解析HTML的地址
             :return:
                 _article_info: dict
                 _content_str_list: list
