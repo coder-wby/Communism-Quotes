@@ -75,7 +75,7 @@
    cd src/spectre
    dotnet run   
    ```
-   aspnet core会在http://localhost:5000启动http服务
+   aspnet core会在 http://localhost:5000 启动http服务
    
 - 启动前端web服务
  
@@ -84,7 +84,7 @@
    npm install
    npm run serve
    ```
-   nodejs会在http://localhost:8080启动一个web服务，web页面会访问上述aspnet的http服务，和后台交互
+   nodejs会在 http://localhost:8080 启动一个web服务，web页面会访问上述aspnet的http服务，和后台交互
    
 - 发布
 
