@@ -40,49 +40,63 @@
 
 ### 开发环境安装和配置
 
-1. 下载项目源码到本地，并进入根目录
+- 安装 `asp.net core sdk`
+
+   windows版本已包含在 `Visual Studio 2019` 中
+   
+   https://visualstudio.microsoft.com/
+   
+   linux版本见官网主页
+   
+   https://docs.microsoft.com/en-us/dotnet/core/install/linux-package-manager-ubuntu-1804
+
+- 安装 `nodejs(npm)`
+
+   https://nodejs.org/en/download/package-manager/
+    
+- 安装 `vue-cli`
+
+  ```
+  npm install -g @vue/cli
+  # OR
+  yarn global add @vue/cli
+  ```
+
+- 下载项目源码到本地，并进入根目录
 
    ```
    git clone https://github.com/nevertiree/Communism-Quotes.git 
    cd Communism-Quotes/
    ```
-
-2. 安装 `Visual Studio 2019`
-
-   见微软官网主页
     
-3. 安装 `asp.net core sdk`，启动后台服务
-
-   windows版本已包含在 `Visual Studio 2019` 中
-   linux版本见官网主页
-   https://docs.microsoft.com/en-us/dotnet/core/install/linux-package-manager-ubuntu-1804
-    
+- 启动后台服务
+ 
    ```
    cd src/spectre
    dotnet run   
    ```
    aspnet core会在http://localhost:5000启动http服务
    
-4. 安装 `nodejs(npm)`
-
-   https://nodejs.org/en/download/package-manager/
-    
-5. 安装 `vue-cli`，启动前端web服务
-
-   https://cli.vuejs.org/guide/installation.html
-   
+- 启动前端web服务
+ 
    ```
-   cd /src/spectre/clientapp
+   cd src/spectre/clientapp
    npm install
    npm run serve
    ```
-   nodejs会在http://localhost:8080启动一个web服务，web页面会访问上述aspnet的http服务，和后台交互。测试完毕后，运行`npm run build`，会将vue项目打包放到aspnet的wwwroot目录下，aspnet同时提供前端web页面服务和后端WebAPI服务（TODO：开发和部署阶段，各种相应的IP和端口需要在代码和配置文件中设置好，尽量自动化）
+   nodejs会在http://localhost:8080启动一个web服务，web页面会访问上述aspnet的http服务，和后台交互
+   
+- 发布
+
+   测试完毕后，运行`npm run build`，会将vue项目打包放到aspnet的wwwroot目录下，aspnet同时提供前端web页面服务和后端WebAPI服务
+
+### elasticsearch相关的开发环境安装和配置
      
-6. 下载 [`ElasticSearch`](https://www.elastic.co/cn/downloads/elasticsearch)
+- 下载 [`ElasticSearch`](https://www.elastic.co/cn/downloads/elasticsearch)
 
     在官方网站上下载 `ElasticSearch` 并解压。
     
-7. 下载中文分词插件 [`IK Analysis for Elasticsearch`](https://github.com/medcl/elasticsearch-analysis-ik)
+- 下载中文分词插件 [`IK Analysis for Elasticsearch`](https://github.com/medcl/elasticsearch-analysis-ik)
 
     进入 `ElasticSearch` 的根目录，通过 `bin/elasticsearch-plugin`命令来安装中文分词插件。
     需要注意分词插件的版本号需要与 `ElasticSearch` 的版本号对应，本项目目前在 `7.5.0` 版本下测试。
@@ -105,7 +119,7 @@
         -a----         plugin-security.policy
     ```
 
-8. 下载文库资料
+- 下载文库资料
 
     Git仓库中没有直接存储文库资料，可以在 `Release` 界面下载。
     后续会实现稳定的下载机制。
