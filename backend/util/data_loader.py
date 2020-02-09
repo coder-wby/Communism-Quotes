@@ -10,9 +10,9 @@ import yaml
 
 
 ROOT = os.path.dirname(__file__)  # util/
-MATERIAL_ROOT = os.path.join(ROOT, "..", "material")
+MATERIAL_ROOT = os.path.join(ROOT, "..", "..", "material")
 
-with open(os.path.join(ROOT, "../conf/author.yaml"), "r", encoding="utf-8") as f:
+with open(os.path.join(ROOT, "../../conf/author.yaml"), "r", encoding="utf-8") as f:
     author_conf = yaml.load(f, Loader=yaml.FullLoader)
 
 VALID_AUTHOR_LIST = list(author_conf["author"].keys())  # 目前支持的作者列表

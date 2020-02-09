@@ -2,7 +2,7 @@
 
 from elasticsearch import Elasticsearch, helpers
 
-from util.html_parser import bulk_doc_json
+from backend.util.html_parser import bulk_doc_json
 
 es = Elasticsearch()
 

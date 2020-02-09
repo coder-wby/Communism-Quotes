@@ -6,7 +6,7 @@ import json
 import requests
 import yaml
 
-from storage.es_insert import create_index, batch_insert
+from backend.storage.es_insert import create_index, batch_insert
 
 
 def todo():

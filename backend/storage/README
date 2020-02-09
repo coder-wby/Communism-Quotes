@@ -1,0 +1,72 @@
+es配置文件里面要有：
+cluster.initial_master_nodes:["node-1"]
+xpack.ml.enabled: false
+http.host: 0.0.0.0
+network.host: 0.0.0.0
+相关配置可以看https://blog.csdn.net/lidew521/article/details/88091539
+https://blog.csdn.net/qq_34246546/article/details/78919744
+
+logstash 相关配置可以参考https://www.elastic.co/cn/blog/how-to-keep-elasticsearch-synchronized-with-a-relational-database-using-logstash
+
+注意要执行，因为要配置中文索引
+/usr/share/elasticsearch/bin/elasticsearch-plugin install https://github.com/medcl/elasticsearch-analysis-ik/releases/download/v6.7.0/elasticsearch-analysis-ik-6.7.0.zip
+
+创建es 索引
+PUT es-policy
+{
+  "settings":{
+      "analysis": {
+      "analyzer": {
+        "my_analyzer": {
+          "tokenizer": "ik_max_word",
+          "char_filter": ["html_strip"]
+        }
+      }
+    }
+  },
+  "mappings": {
+    "policy":{
+      "properties":{
+        "id":{"type":"integer"},
+        "code":{"type":"text"},
+        "pub_date":{"type":"date"},
+        "effective_date":{"type":"date"},
+        "note_date":{"type":"date"},
+        "dispatch":{
+            "type":"text",
+            "analyzer":"my_analyzer",
+            "search_analyzer":"ik_max_word"
+            },
+        "effective":{"type":"text"},
+        "property":{"type":"text"},
+        "level":{"type":"text"},
+        "sub_databse":{"type":"text"},
+        "content":{
+            "type":"text",
+            "search_analyzer":"ik_max_word",
+            "analyzer":"my_analyzer"
+            },
+        "keywords":{
+            "type":"text",
+            "analyzer":"ik_max_word",
+            "search_analyzer":"ik_max_word"
+            },
+        "region":{
+            "type":"text",
+            "analyzer":"ik_max_word",
+            "search_analyzer":"ik_max_word"
+            },
+        "institutions":{
+            "type":"text",
+            "analyzer":"my_analyzer",
+            "search_analyzer":"ik_max_word"
+            },
+        "tags":{
+            "type":"text",
+            "analyzer":"my_analyzer",
+            "search_analyzer":"ik_max_word"
+            }
+    }
+  }
+}
+}

@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 
 import re
+import os
 
 import yaml
 
 from lxml import etree
-from util.text_parser import check_contain_chinese
-from util.data_loader import load_origin_html_list
+from backend.util.text_parser import check_contain_chinese
+from backend.util.data_loader import load_origin_html_list
 
 """ HTML解析器
     原始数据是从马克思主义中文文库上抓取的HTML网页。
@@ -15,7 +16,9 @@ from util.data_loader import load_origin_html_list
 
 gbk_parser = etree.HTMLParser(encoding='GBK')  # 原始网页是GBK编码，所以需要手动设置格式。
 
-with open("../conf/author.yaml", "r", encoding="utf-8") as f:
+UTIL_ROOT = os.path.dirname(__file__)
+
+with open(os.path.join(UTIL_ROOT, "..", "..", "conf", "author.yaml"), "r", encoding="utf-8") as f:
     author_conf = yaml.load(f, Loader=yaml.FullLoader)
 
 AUTHOR_NAME_DICT = author_conf["author"]  # 目前支持的作者列表

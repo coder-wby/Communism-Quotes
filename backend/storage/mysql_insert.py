@@ -5,7 +5,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, String, Date, Integer
 from sqlalchemy.orm import sessionmaker
 
-from util.html_parser import bulk_doc_json
+from backend.util.html_parser import bulk_doc_json
 
 """ 前置工作
 

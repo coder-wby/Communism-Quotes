@@ -2,7 +2,7 @@
 
 from smoothnlp.algorithm.phrase import extract_phrase
 
-from util.html_parser import bulk_doc_json
+from backend.util.html_parser import bulk_doc_json
 
 if __name__ == '__main__':
     doc_content_list = []
